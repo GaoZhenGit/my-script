@@ -25,3 +25,5 @@ Thumbs.db
 
 # Tools (运行时生成)
 *.log
+
+docs
