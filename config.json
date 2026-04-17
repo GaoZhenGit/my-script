@@ -4,6 +4,7 @@
     "default_remote_port": 1081
   },
   "global": {
-    "adb_path": "adb"
+    "adb_path": "adb",
+    "proxy_url": "socks5h://socks5:password123@127.0.0.1:1080"
   }
 }

@@ -9,7 +9,8 @@
 ```
 ├── config.json              # 统一配置文件
 ├── tools.py                 # 公共方法库
-├── molink.py / molink.ps1   # 首个工具：ADB 端口转发
+├── molink.py / molink.ps1   # ADB 端口转发
+├── req.py / req.ps1         # HTTP 请求工具（通过代理）
 └── docs/superpowers/        # 设计文档和实施计划
 ```
 
@@ -30,6 +31,7 @@
 | `run_cmd(cmd, check=True)` | 封装 subprocess，统一错误处理 |
 | `log_info(msg)` | 标准输出 `[INFO]` 日志 |
 | `log_error(msg)` | 标准错误输出 `[ERROR]` 日志 |
+| `proxy_request(url, method, data, headers)` | 通过 SOCKS5H 代理发送 HTTP 请求，直接打印结果 |
 
 ## 统一配置 config.json
 
