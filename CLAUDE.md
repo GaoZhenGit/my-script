@@ -57,6 +57,7 @@ molink -s 192.168.1.100 connect   # 连接设备
 req https://example.com              # GET 请求
 req https://example.com -X POST -d '{"a":1}'  # POST 请求
 req https://example.com -H "Content-Type:application/json"  # 带请求头
+req https://example.com -o result.txt  # 下载到文件（相对路径相对于当前目录）
 ```
 
 ## 公共方法库 tools.py
