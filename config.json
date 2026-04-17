@@ -1,0 +1,9 @@
+{
+  "molink": {
+    "default_local_port": 1080,
+    "default_remote_port": 1081
+  },
+  "global": {
+    "adb_path": "adb"
+  }
+}
