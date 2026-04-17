@@ -8,11 +8,20 @@
 
 ```
 ├── config.json              # 统一配置文件
-├── tools.py                 # 公共方法库
-├── molink.py / molink.ps1   # ADB 端口转发
-├── req.py / req.ps1         # HTTP 请求工具（通过代理）
-└── docs/superpowers/        # 设计文档和实施计划
+├── tools.py               # 公共方法库
+├── b64.py / b64.ps1      # Base64 编解码
+├── molink.py / molink.ps1 # ADB 端口转发
+├── req.py / req.ps1        # HTTP 请求工具（通过代理）
+└── docs/superpowers/      # 设计文档和实施计划
 ```
+
+## 工具列表
+
+| 工具 | 描述 |
+|------|------|
+| `b64` | Base64 编解码 |
+| `molink` | ADB 端口转发 |
+| `req` | HTTP 请求（通过代理） |
 
 ## 工具规范
 
@@ -21,6 +30,34 @@
 - `.py` 文件：功能实现，使用 argparse
 - `.ps1` 文件：透明代理，只负责 `python <py_file> $args`
 - 新增工具：添加同名 `.py` 和 `.ps1` 文件即可
+
+## 工具用法
+
+### b64 - Base64 编解码
+
+```powershell
+b64 encode "字符串"        # 编码
+b64 decode "Base64字符串"   # 解码
+echo "test" | b64 encode    # stdin 输入
+b64 encode -f test.txt      # 从文件编码
+b64 decode -f data.b64    # 从文件解码
+```
+
+### molink - ADB 端口转发
+
+```powershell
+molink forward tcp:1080 tcp:1081   # 转发本地端口到设备
+molink list                        # 查看所有转发
+molink -s 192.168.1.100 connect   # 连接设备
+```
+
+### req - HTTP 请求
+
+```powershell
+req https://example.com              # GET 请求
+req https://example.com -X POST -d '{"a":1}'  # POST 请求
+req https://example.com -H "Content-Type:application/json"  # 带请求头
+```
 
 ## 公共方法库 tools.py
 
