@@ -12,7 +12,7 @@
 ├── b64.py / b64.ps1      # Base64 编解码
 ├── molink.py / molink.ps1 # ADB 端口转发
 ├── req.py / req.ps1        # HTTP 请求工具（通过代理）
-├── claude-wrapper.py / claude-wrapper.ps1  # Claude Code 启动器（绕过杀软拦截）
+├── claude-wrapper.py / claude-wrapper.ps1  # Claude Code 启动器
 └── docs/superpowers/      # 设计文档和实施计划
 ```
 
@@ -23,7 +23,7 @@
 | `b64` | Base64 编解码 |
 | `molink` | ADB 端口转发 |
 | `req` | HTTP 请求（通过代理） |
-| `claude-wrapper` | Claude Code 启动器，绕过杀软进程名拦截 |
+| `claude-wrapper` | Claude Code 启动器 |
 
 ## 工具规范
 
@@ -64,7 +64,7 @@ req https://example.com -o result.txt  # 下载到文件（相对路径相对于
 
 ### claude-wrapper - Claude Code 启动器
 
-企业杀软（奇安信/亚信）会拦截 `claude.exe` 直接运行。此工具通过 Python subprocess 调用重命名后的 `claude.bin`，绕过杀软的进程名信誉检测。
+通过 Python subprocess 调用本地 claude.bin。
 
 ```powershell
 claude-wrapper --version           # 查看版本
