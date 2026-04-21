@@ -18,9 +18,9 @@ if __name__ == "__main__":
     output_path = None
     if args.output:
         if not os.path.isabs(args.output):
-            output_path = os.path.join(os.getcwd(), args.output)
+            output_path = os.path.normpath(os.path.join(os.getcwd(), args.output))
         else:
-            output_path = args.output
+            output_path = os.path.normpath(args.output)
 
     headers = {}
     if args.headers:

@@ -40,12 +40,28 @@ def proxy_request(url: str, method="GET", data=None, headers=None, output=None):
 
     proxies = {"http": proxy_url, "https": proxy_url}
 
-    resp = requests.request(method, url, data=data, headers=headers or {}, proxies=proxies)
+    # 使用 stream 模式以支持进度显示
+    resp = requests.request(method, url, data=data, headers=headers or {}, proxies=proxies, stream=True)
 
     if output:
-        # 保存到文件
+        # 下载文件，显示进度条
+        total_size = int(resp.headers.get("Content-Length", 0))
+        downloaded = 0
+        chunk_size = 8192
+
         with open(output, "wb") as f:
-            f.write(resp.content)
+            for chunk in resp.iter_content(chunk_size=chunk_size):
+                if chunk:
+                    f.write(chunk)
+                    downloaded += len(chunk)
+                    if total_size > 0:
+                        percent = downloaded * 100 // total_size
+                        bar_len = 30
+                        filled = bar_len * downloaded // total_size
+                        bar = "█" * filled + "░" * (bar_len - filled)
+                        print(f"\r[{bar}] {percent}% ({downloaded}/{total_size} bytes)", end="", flush=True)
+
+        print()  # 换行
         print(f"[已保存到: {output}]")
     else:
         print(f"状态码: {resp.status_code}")
