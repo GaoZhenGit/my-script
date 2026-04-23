@@ -6,5 +6,10 @@
   "global": {
     "adb_path": "adb",
     "proxy_url": "socks5h://socks5:password123@127.0.0.1:1080"
+  },
+  "http2socks": {
+    "port": 7890,
+    "bind": "127.0.0.1",
+    "pid_file": "D:\\data\\my-script\\http2socks.pid"
   }
 }
