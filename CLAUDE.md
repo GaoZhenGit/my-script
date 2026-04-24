@@ -13,6 +13,7 @@
 ├── molink.py / molink.ps1 # ADB 端口转发
 ├── req.py / req.ps1        # HTTP 请求工具（通过代理）
 ├── claude.ps1             # Claude Code 启动器
+├── pip-pkg.py / pip-pkg.ps1 # pip 离线打包工具
 ├── bun_claude.v2.1.117.exe # Claude Code 可执行文件
 └── docs/superpowers/      # 设计文档和实施计划
 ```
@@ -25,6 +26,7 @@
 | `molink` | ADB 端口转发 |
 | `req` | HTTP 请求（通过代理） |
 | `claude` | Claude Code 启动器 |
+| `pip-pkg` | pip 离线打包工具 |
 
 ## 工具规范
 
@@ -74,6 +76,17 @@ claude -p "你的问题"         # 非交互模式（单次提问）
 claude                     # 进入交互模式
 ```
 
+### pip-pkg - 离线打包
+
+将 pip 包及其依赖打包为离线安装包。
+
+```powershell
+pip-pkg seleniumbase --proxy socks5h://... -i https://pypi.tuna.tsinghua.edu.cn/simple --trusted-host pypi.tuna.tsinghua.edu.cn
+python output/seleniumbase/install_seleniumbase.py
+```
+
+> **config.json 配置**：在 `pip-pkg` 下可设置 `python_version`（如 `"3.10"`），用于指定目标机器的 Python 版本，让 pip download 下载对应版本的 wheel。其他参数（platform、abi 等）自动使用本机环境。
+
 ## 公共方法库 tools.py
 
 | 方法 | 职责 |
@@ -95,3 +108,5 @@ claude                     # 进入交互模式
 
 - 设计文档：`docs/superpowers/specs/2026-04-17-toolbox-design.md`
 - 实施计划：`docs/superpowers/plans/2026-04-17-molink-toolbox.md`
+- pip-pkg 设计文档：`docs/superpowers/specs/2026-04-24-pip-pkg-design.md`
+- pip-pkg 实施计划：`docs/superpowers/plans/2026-04-24-pip-pkg-plan.md`
