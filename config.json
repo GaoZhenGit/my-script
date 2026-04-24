@@ -11,5 +11,11 @@
     "port": 7890,
     "bind": "127.0.0.1",
     "pid_file": "D:\\data\\my-script\\http2socks.pid"
+  },
+  "anychat-app": {
+    "base_url": "https://usee-uavp-inner-dev.test.abchina.com.cn/mt/pages",
+    "username": "admin",
+    "password": "Anychat123@",
+    "apps": "1D27471C-30A9-E6CF-574B-DAF7FEA96C8E 1d27471c30a9e6cf574bdaf7fea96c8e\n3EFB7BCD-0E3E-4CF2-B281-49E32DF29C67 3efb7bcd0e3e4cf2b28149e32df29c67\n44670DF2-B623-4D8F-88C9-EF5386E48919 44670df2b6234d8f88c9ef5386e48919"
   }
 }
