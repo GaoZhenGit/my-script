@@ -182,6 +182,9 @@ class SOCKS5Handler(http.server.BaseHTTPRequestHandler):
             self.send_error(502, "代理地址格式错误")
             return
 
+        # 优先使用请求传入的认证信息，透传给 SOCKS5
+        auth_user, auth_pass = self._get_proxy_auth()
+
         try:
             sock = socks.socksocket()
             sock.set_proxy(
@@ -189,8 +192,8 @@ class SOCKS5Handler(http.server.BaseHTTPRequestHandler):
                 addr=proxy_info["host"],
                 port=proxy_info["port"],
                 rdns=True,  # SOCKS5H: 远程 DNS 解析
-                username=proxy_info.get("user"),
-                password=proxy_info.get("pass")
+                username=auth_user or proxy_info.get("user"),
+                password=auth_pass or proxy_info.get("pass")
             )
 
             host, port = self._parse_host_port(self.path)
@@ -202,6 +205,23 @@ class SOCKS5Handler(http.server.BaseHTTPRequestHandler):
 
         except Exception as e:
             self.send_error(502, "SOCKS5 proxy error")
+
+    def _get_proxy_auth(self):
+        """从 Proxy-Authorization 头解析认证信息"""
+        auth_header = self.headers.get("Proxy-Authorization")
+        if not auth_header:
+            return None, None
+
+        try:
+            import base64
+            auth_type, credentials = auth_header.split(" ", 1)
+            if auth_type.lower() == "basic":
+                decoded = base64.b64decode(credentials).decode("utf-8")
+                user, password = decoded.split(":", 1)
+                return user, password
+        except Exception:
+            pass
+        return None, None
 
     def _relay(self, sock):
         """双向转发数据"""
