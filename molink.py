@@ -85,26 +85,30 @@ def compress_folder(folder_path: str, git_spec=None) -> str:
 def forward(port_local=None, port_remote=None):
     port_local = port_local or tools.get_config("molink", "default_local_port", 1080)
     port_remote = port_remote or tools.get_config("molink", "default_remote_port", 1081)
-    tools.log_info(f"执行: adb forward tcp:{port_local} tcp:{port_remote}")
-    print(tools.run_cmd(["adb", "forward", f"tcp:{port_local}", f"tcp:{port_remote}"]))
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} forward tcp:{port_local} tcp:{port_remote}")
+    print(tools.run_cmd([adb, "forward", f"tcp:{port_local}", f"tcp:{port_remote}"]))
 
 
 def list_forwards():
-    tools.log_info("执行: adb forward --list")
-    print(tools.run_cmd(["adb", "forward", "--list"]))
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} forward --list")
+    print(tools.run_cmd([adb, "forward", "--list"]))
 
 
 def remove(port):
-    tools.log_info(f"执行: adb forward --remove tcp:{port}")
-    print(tools.run_cmd(["adb", "forward", "--remove", f"tcp:{port}"]))
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} forward --remove tcp:{port}")
+    print(tools.run_cmd([adb, "forward", "--remove", f"tcp:{port}"]))
 
 
 def ls_remote():
-    tools.log_info(f"执行: adb shell ls -la {REMOTE_DIR}")
-    result = tools.run_cmd(["adb", "shell", f"ls -la {REMOTE_DIR}"], check=False)
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} shell ls -la {REMOTE_DIR}")
+    result = tools.run_cmd([adb, "shell", f"ls -la {REMOTE_DIR}"], check=False)
     if "No such file or directory" in result or result.strip() == "":
         tools.log_info(f"目录不存在，创建: {REMOTE_DIR}")
-        tools.run_cmd(["adb", "shell", "mkdir", "-p", REMOTE_DIR])
+        tools.run_cmd([adb, "shell", "mkdir", "-p", REMOTE_DIR])
         print(f"已创建目录: {REMOTE_DIR}")
     else:
         lines = result.strip().split("\n")
@@ -123,8 +127,9 @@ def ls_remote():
 
 
 def pull():
-    tools.log_info(f"执行: adb shell ls {REMOTE_DIR}")
-    result = tools.run_cmd(["adb", "shell", f"ls {REMOTE_DIR}"], check=False)
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} shell ls {REMOTE_DIR}")
+    result = tools.run_cmd([adb, "shell", f"ls {REMOTE_DIR}"], check=False)
     if "No such file or directory" in result or result.strip() == "":
         print(f"目录不存在: {REMOTE_DIR}")
         return
@@ -152,8 +157,8 @@ def pull():
             display_name = display_names[choice]
             temp_dir = tempfile.gettempdir()
             temp_path = os.path.join(temp_dir, raw_name)
-            tools.log_info(f"执行: adb pull {REMOTE_DIR}/{raw_name} {temp_path}")
-            print(tools.run_cmd(["adb", "pull", f"{REMOTE_DIR}/{raw_name}", temp_path]))
+            tools.log_info(f"执行: {adb} pull {REMOTE_DIR}/{raw_name} {temp_path}")
+            print(tools.run_cmd([adb, "pull", f"{REMOTE_DIR}/{raw_name}", temp_path]))
 
             if display_name.lower().endswith(".molink.zip"):
                 tools.log_info("检测到 .molink.zip 文件，自动解压")
@@ -221,9 +226,10 @@ def push(filename, git_mode=None):
         zip_name = os.path.basename(zip_path)
         remote_name = encode_name(zip_name)
 
+        adb = tools.get_config("molink", "adb_path", "adb")
         try:
-            tools.log_info(f"执行: adb push {zip_path} {REMOTE_DIR}/{remote_name}")
-            print(tools.run_cmd(["adb", "push", zip_path, f"{REMOTE_DIR}/{remote_name}"]))
+            tools.log_info(f"执行: {adb} push {zip_path} {REMOTE_DIR}/{remote_name}")
+            print(tools.run_cmd([adb, "push", zip_path, f"{REMOTE_DIR}/{remote_name}"]))
             print(f"已上传文件夹: {original_name} -> {REMOTE_DIR}/{remote_name}")
             if use_gitignore and git_spec:
                 print(f"（已忽略 {ignored_count} 个路径）")
@@ -234,15 +240,17 @@ def push(filename, git_mode=None):
                 except Exception:
                     tools.log_info(f"临时文件清理失败: {zip_path}")
     else:
+        adb = tools.get_config("molink", "adb_path", "adb")
         remote_name = encode_name(original_name)
-        tools.log_info(f"执行: adb push {filename} {REMOTE_DIR}/{remote_name}")
-        print(tools.run_cmd(["adb", "push", filename, f"{REMOTE_DIR}/{remote_name}"]))
+        tools.log_info(f"执行: {adb} push {filename} {REMOTE_DIR}/{remote_name}")
+        print(tools.run_cmd([adb, "push", filename, f"{REMOTE_DIR}/{remote_name}"]))
         print(f"已上传: {original_name} -> {REMOTE_DIR}/{remote_name}")
 
 
 def delete():
-    tools.log_info(f"执行: adb shell ls {REMOTE_DIR}")
-    result = tools.run_cmd(["adb", "shell", f"ls {REMOTE_DIR}"], check=False)
+    adb = tools.get_config("molink", "adb_path", "adb")
+    tools.log_info(f"执行: {adb} shell ls {REMOTE_DIR}")
+    result = tools.run_cmd([adb, "shell", f"ls {REMOTE_DIR}"], check=False)
     if "No such file or directory" in result or result.strip() == "":
         print(f"目录不存在: {REMOTE_DIR}")
         return
@@ -270,8 +278,8 @@ def delete():
             display_name = display_names[choice]
             confirm = input(f"确认删除 {display_name}? (y/N): ").strip().lower()
             if confirm == "y":
-                tools.log_info(f"执行: adb shell rm {REMOTE_DIR}/{raw_name}")
-                print(tools.run_cmd(["adb", "shell", "rm", f"{REMOTE_DIR}/{raw_name}"]))
+                tools.log_info(f"执行: {adb} shell rm {REMOTE_DIR}/{raw_name}")
+                print(tools.run_cmd([adb, "shell", "rm", f"{REMOTE_DIR}/{raw_name}"]))
                 print(f"已删除: {display_name}")
             else:
                 print("已取消")
