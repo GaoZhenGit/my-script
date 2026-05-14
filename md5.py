@@ -1,17 +1,8 @@
 import argparse
 import sys
 import hashlib
-from colorama import init as colorama_init, Fore, Style
 import os
-import platform
-
-if os.environ.get("MSYSTEM"):
-    colorama_init(strip=False)
-elif platform.system() == "Windows":
-    colorama_init()
-
-C = Fore.CYAN
-R = Style.RESET_ALL
+from tools import C, RED, R, log_error
 
 
 def md5sum(filepath: str) -> str:
@@ -30,7 +21,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if not os.path.exists(args.file):
-        print(f"{Fore.RED}[ERROR]{R} 文件不存在: {args.file}", file=sys.stderr)
+        log_error(f"文件不存在: {args.file}")
         sys.exit(1)
 
     digest = md5sum(args.file)

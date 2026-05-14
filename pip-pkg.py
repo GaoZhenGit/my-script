@@ -10,6 +10,7 @@ import subprocess
 import sys
 import zipfile
 import json
+from tools import log_info, log_error, log_warn
 
 TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_PATH = os.path.join(TOOLS_DIR, "config.json")
@@ -37,7 +38,7 @@ def download_wheels(package, output_dir, extra_args, python_version):
 
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
-        print("[ERROR] pip download failed:", file=sys.stderr)
+        log_error("pip download failed:")
         print(result.stderr, file=sys.stderr)
         sys.exit(1)
     return wheels_dir
@@ -107,13 +108,13 @@ def main():
         shutil.rmtree(pkg_dir)
     os.makedirs(pkg_dir)
 
-    print("[INFO] 下载 wheel 包...")
+    log_info("下载 wheel 包...")
     wheels_dir = download_wheels(args.package, pkg_dir, args.extra_args, python_version)
 
-    print("[INFO] 打包为 zip...")
+    log_info("打包为 zip...")
     zip_path = create_zip(wheels_dir, pkg_dir, args.package)
 
-    print("[INFO] 生成安装脚本...")
+    log_info("生成安装脚本...")
     script_path = generate_install_script(pkg_dir, args.package)
 
     print(f"[OK] 完成: {pkg_dir}")

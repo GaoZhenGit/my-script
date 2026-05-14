@@ -15,6 +15,14 @@ elif platform.system() == "Windows":
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), "config.json")
 
 
+# 颜色常量，供各工具使用
+C = Fore.CYAN
+G = Fore.GREEN
+Y = Fore.YELLOW
+R = Style.RESET_ALL
+RED = Fore.RED
+
+
 class RequestError(Exception):
     """HTTP 请求失败异常（精简信息，不带堆栈）"""
     pass
@@ -39,6 +47,10 @@ def run_cmd(cmd: list, check=True, encoding="utf-8"):
 
 def log_info(msg: str):
     print(f"{Fore.GREEN}[INFO]{Style.RESET_ALL} {msg}")
+
+
+def log_warn(msg: str):
+    print(f"{Fore.YELLOW}[WARN]{Style.RESET_ALL} {msg}")
 
 
 def log_error(msg: str):
@@ -90,14 +102,13 @@ def proxy_request(url: str, method="GET", data=None, headers=None, output=None, 
     if follow_redirects is None:
         follow_redirects = get_config("global", "follow_redirects", True)
 
-    log_info(f"{Fore.CYAN}代理: {proxy_type}{Style.RESET_ALL}")
+    log_info(f"{C}代理: {proxy_type}{R}")
     proxies = {"http": proxy_url, "https": proxy_url}
 
     def _redirect_hook(response, **kwargs):
         if response.is_redirect or response.is_permanent_redirect:
             loc = response.headers.get("Location", "?")
-            status_color = Fore.YELLOW
-            print(f"{status_color}重定向 {response.status_code} -> {loc}{Style.RESET_ALL}")
+            print(f"{Y}重定向 {response.status_code} -> {loc}{R}")
 
     try:
         with requests.Session() as sess:
@@ -134,6 +145,6 @@ def proxy_request(url: str, method="GET", data=None, headers=None, output=None, 
         print()  # 换行
         print(f"[已保存到: {output}]")
     else:
-        status_color = Fore.GREEN if 200 <= resp.status_code < 300 else Fore.YELLOW if resp.status_code < 400 else Fore.RED
-        print(f"{status_color}状态码: {resp.status_code}{Style.RESET_ALL}")
+        status_color = G if 200 <= resp.status_code < 300 else Y if resp.status_code < 400 else RED
+        print(f"{status_color}状态码: {resp.status_code}{R}")
         print(resp.text)

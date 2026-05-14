@@ -7,6 +7,7 @@ import hashlib
 import os
 import sys
 import socket
+from tools import log_info, log_error, log_warn
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, ed25519, ec
 from cryptography.hazmat.backends import default_backend
@@ -27,7 +28,7 @@ def generate_rsa(bits: int, comment: str, password: str = None):
     if bits < 1024:
         raise ValueError("RSA 密钥位数至少为 1024")
     if bits < 2048:
-        print("[WARNING] RSA 密钥位数低于 2048 可能不安全", file=sys.stderr)
+        log_warn("RSA 密钥位数低于 2048 可能不安全")
 
     private_key = rsa.generate_private_key(
         public_exponent=65537,
@@ -208,7 +209,7 @@ def change_passphrase(private_key, old_password: str = None, new_password: str =
     if new_password:
         confirm = getpass.getpass("确认新密码: ")
         if confirm != new_password:
-            print("[ERROR] 密码不匹配", file=sys.stderr)
+            log_error("密码不匹配")
             sys.exit(1)
 
     encryption = encrypt_private_key(new_password)
@@ -253,7 +254,7 @@ def read_private_key(filepath: str, password: str = None):
         )
         return private_key
     except Exception as e:
-        print(f"[ERROR] 密码错误或私钥格式无效: {e}", file=sys.stderr)
+        log_error(f"密码错误或私钥格式无效: {e}")
         sys.exit(1)
 
 
@@ -298,7 +299,7 @@ def cmd_generate(args):
         elif key_type == "ecdsa":
             filepath = os.path.join(os.path.expanduser("~"), ".ssh", "id_ecdsa")
         else:
-            print(f"[ERROR] 不支持的密钥类型: {key_type}", file=sys.stderr)
+            log_error(f"不支持的密钥类型: {key_type}")
             sys.exit(1)
 
     # 私钥路径
@@ -327,7 +328,7 @@ def cmd_generate(args):
     elif key_type == "ecdsa":
         private_key, comment, password = generate_ecdsa(bits, comment, password)
     else:
-        print(f"[ERROR] 不支持的密钥类型: {key_type}", file=sys.stderr)
+        log_error(f"不支持的密钥类型: {key_type}")
         sys.exit(1)
 
     public_key = private_key.public_key()
@@ -394,7 +395,7 @@ def cmd_fingerprint(args):
         key_type_tmp, _, _ = parse_ssh_public_key_blob(key_blob_bytes)
         key_type = key_type_tmp
     else:
-        print(f"[ERROR] 文件不存在: {filepath}", file=sys.stderr)
+        log_error(f"文件不存在: {filepath}")
         sys.exit(1)
 
     md5_fp, sha256_fp, key_bits, key_type = calculate_fingerprint(key_blob_bytes)
@@ -412,7 +413,7 @@ def cmd_change_passphrase(args):
     """修改私钥密码（-p 参数）"""
     filepath = args.file
     if not filepath:
-        print("[ERROR] 必须指定私钥文件 (-f)", file=sys.stderr)
+        log_error("必须指定私钥文件 (-f)")
         sys.exit(1)
 
     private_key = read_private_key(filepath, args.old_password)
@@ -444,7 +445,7 @@ def cmd_change_passphrase(args):
         if new_password:
             confirm = getpass.getpass("确认新密码: ")
             if confirm != new_password:
-                print("[ERROR] 密码不匹配", file=sys.stderr)
+                log_error("密码不匹配")
                 sys.exit(1)
             new_password = new_password if new_password else None
         else:
