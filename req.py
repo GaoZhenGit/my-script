@@ -41,6 +41,10 @@ if __name__ == "__main__":
     try:
         tools.proxy_request(args.url, method=args.method.upper(), data=args.data, headers=headers, output=output_path,
                             follow_redirects=not args.no_follow_redirects)
+    except KeyboardInterrupt:
+        print()
+        tools.log_warn("用户中断")
+        sys.exit(130)
     except tools.RequestError as e:
         tools.log_error(str(e))
         sys.exit(1)
